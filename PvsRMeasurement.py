@@ -215,8 +215,17 @@ class RecSystem:
 
         # my-rec-system
         if self.typeOfSystem == 7:
-            my_rec_system = MyRecomendationSystem(self.trainsetDataRepresentation)
-            self.processedDataRepresentation = my_rec_system.get_result()
+            # my_rec_system = MyRecomendationSystem(self.trainsetDataRepresentation, 'data/u.data')
+            # self.processedDataRepresentation = my_rec_system.get_result()
+            self.coreDataRepresentation = self.trainsetDataRepresentation[1:, 1:]
+
+            self.rowSumsVector = self.trainsetDataRepresentation[1:, 0]
+            self.columnSumsVector = self.trainsetDataRepresentation[0, 1:]
+            self.rowAveragesVector = self.rowSumsVector / len(self.rowSumsVector)
+            self.columnAveragesVector = self.columnSumsVector / len(self.columnSumsVector)
+            self.columnAveragesMatrix = np.outer(np.ones(len(self.rowSumsVector)), self.columnAveragesVector)
+            self.rowAveragesMatrix = np.outer(self.rowAveragesVector, np.ones(len(self.columnSumsVector)))
+            self.processedDataRepresentation = self.columnAveragesMatrix + self.rowAveragesMatrix
 
         if self.typeOfSystem == 3:
             self.rowSumsVector = self.trainsetDataRepresentation[1:, 0]
