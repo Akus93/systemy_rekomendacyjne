@@ -28,6 +28,8 @@ class MyRecomendationSystem:
         self.calculate_users_avg_rating()
         self.calculate_movies_avg_rating()
 
+
+
     def get_result(self):
         bar = Bar('Progress', max=len(self.movies))
         result_matrix = [['user/movie', ]]
@@ -134,8 +136,9 @@ class MyRecomendationSystem:
         users_set_without_user = self.users - {user}
         for other_user in users_set_without_user:
             similarity = self.pearson_correlation_similarity(user, other_user)
-            k_denominator += abs(similarity)
-            summation += similarity * (self.data_matrix[other_user][movie] - self.data_dict['users'][other_user]['ratings_avg'])
+            if similarity:
+                k_denominator += abs(similarity)
+                summation += similarity * (self.data_matrix[other_user][movie] - self.data_dict['users'][other_user]['ratings_avg'])
 
         k = 1 / k_denominator
 

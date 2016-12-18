@@ -214,18 +214,18 @@ class RecSystem:
         k = self.numberOfDimensionsToBeLeft
 
         # my-rec-system
-        if self.typeOfSystem == 7:
-            # my_rec_system = MyRecomendationSystem(self.trainsetDataRepresentation, 'data/u.data')
-            # self.processedDataRepresentation = my_rec_system.get_result()
-            self.coreDataRepresentation = self.trainsetDataRepresentation[1:, 1:]
-
-            self.rowSumsVector = self.trainsetDataRepresentation[1:, 0]
-            self.columnSumsVector = self.trainsetDataRepresentation[0, 1:]
-            self.rowAveragesVector = self.rowSumsVector / len(self.rowSumsVector)
-            self.columnAveragesVector = self.columnSumsVector / len(self.columnSumsVector)
-            self.columnAveragesMatrix = np.outer(np.ones(len(self.rowSumsVector)), self.columnAveragesVector)
-            self.rowAveragesMatrix = np.outer(self.rowAveragesVector, np.ones(len(self.columnSumsVector)))
-            self.processedDataRepresentation = self.columnAveragesMatrix + self.rowAveragesMatrix
+        # if self.typeOfSystem == 7:
+        #     # my_rec_system = MyRecomendationSystem(self.trainsetDataRepresentation, 'data/u.data')
+        #     # self.processedDataRepresentation = my_rec_system.get_result()
+        #     self.coreDataRepresentation = self.trainsetDataRepresentation[1:, 1:]
+        #
+        #     self.rowSumsVector = self.trainsetDataRepresentation[1:, 0]
+        #     self.columnSumsVector = self.trainsetDataRepresentation[0, 1:]
+        #     self.rowAveragesVector = self.rowSumsVector / len(self.rowSumsVector)
+        #     self.columnAveragesVector = self.columnSumsVector / len(self.columnSumsVector)
+        #     self.columnAveragesMatrix = np.outer(np.ones(len(self.rowSumsVector)), self.columnAveragesVector)
+        #     self.rowAveragesMatrix = np.outer(self.rowAveragesVector, np.ones(len(self.columnSumsVector)))
+        #     self.processedDataRepresentation = self.columnAveragesMatrix + self.rowAveragesMatrix
 
         if self.typeOfSystem == 3:
             self.rowSumsVector = self.trainsetDataRepresentation[1:, 0]
@@ -395,7 +395,7 @@ class RecSystem:
             queryResult = self.sciagaDlaWszechwiedzacego[queryTuple]
 
         if (self.typeOfSystem == 2) or (self.typeOfSystem == 3) or (self.typeOfSystem == 4) or (
-                    self.typeOfSystem == 5) or (self.typeOfSystem == 6) or self.typeOfSystem == 7:
+                    self.typeOfSystem == 5) or (self.typeOfSystem == 6):
             if (queryTuple[0] in self.dids1.listaSlownikowIndeksowania[1].keys()) and (
                         queryTuple[1] in self.dids1.listaSlownikowIndeksowania[2].keys()):
                 queryResult = self.processedDataRepresentation[
@@ -406,7 +406,7 @@ class RecSystem:
         return queryResult
 
     def getMultiQueryFloatResults(self, queryTuplesList):
-        if not (self.inputDataProcessed):
+        if not self.inputDataProcessed:
             self.processInputArray()
         multiQueryFloatResults = {}
         for tempQueryTuple in queryTuplesList:
@@ -603,7 +603,9 @@ def makeCurveFigure(horizontalValues, verticalValues, numberOfRandomTrainAndTest
 
 if __name__ == '__main__':
 
-    wspolczynnikRedukcjiWielkosciZbioruDanych = 0.1
+    from my_next_rec_system import MyNextRecSystem
+
+    wspolczynnikRedukcjiWielkosciZbioruDanych = 0.2
 
     SubUDataSet = getSubUDataSet(wspolczynnikRedukcjiWielkosciZbioruDanych, 1)
     inTuples = convertSubUDataSetToInTuplesList(SubUDataSet, 4)
@@ -714,6 +716,9 @@ if __name__ == '__main__':
             rs.spoilResults(tso.sciagaDlaWszechwiedzacego)
             recSystems.append(rs)
 
+            rs = MyNextRecSystem(trainSet)
+            recSystems.append(rs)
+
             rs = RecSystem(dids1, copy.deepcopy(abdr1.trainsetDataRepresentation), 2)
             rs.numberOfDimensionsToBeLeft = 10
             recSystems.append(rs)
@@ -733,9 +738,9 @@ if __name__ == '__main__':
             rs.numberOfDimensionsToBeLeft = 10
             recSystems.append(rs)
 
-            rs = RecSystem(dids1, copy.deepcopy(abdr1.trainsetDataRepresentation), 7)
-            rs.numberOfDimensionsToBeLeft = 10
-            recSystems.append(rs)
+            # rs = RecSystem(dids1, copy.deepcopy(abdr1.trainsetDataRepresentation), 7)
+            # rs.numberOfDimensionsToBeLeft = 10
+            # recSystems.append(rs)
 
             numberOfPvsRCurvePoints = 20
             for recSysNumber in range(numberOfRecSystems):
@@ -761,8 +766,9 @@ if __name__ == '__main__':
                 TestResults[-1][-1].append(multiQueryBinaryResults)
                 TestResults2[-1][-1].append(multiqueryFloatResults_)
 
-    recSystemsLabels = ['random', 'ideal', 'SVD-based', 'classical-averages-based', 'overallCentring-based_MPCA',
-                        'statisticalCentring-based_MPCA with decentring', 'statistical-avaraged-based', 'my-rec-system']
+    recSystemsLabels = ['random', 'ideal', 'my-rec-system', 'SVD-based', 'classical-averages-based',
+                        'overallCentring-based_MPCA', 'statisticalCentring-based_MPCA with decentring',
+                        'statistical-avaraged-based']
 
     plt.ioff()
     plt.figure(figsize=(20, 10), linewidth=0.1)
