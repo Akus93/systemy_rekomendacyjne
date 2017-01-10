@@ -2,7 +2,7 @@ from PvsRMeasurement import RecSystem
 from math import sqrt
 
 
-class MyNextRecSystem(RecSystem):
+class RecommendationSystem(RecSystem):
 
     def __init__(self, trainSet):
         self.trainSet = trainSet
@@ -114,7 +114,7 @@ class MyNextRecSystem(RecSystem):
         summation = 0
         users_set_without_user = self.users - {user}
         for other_user in users_set_without_user:
-            similarity = self.pearson_correlation_similarity(user, other_user) # + self.data_based_similarity(user, other_user)
+            similarity = self.pearson_correlation_similarity(user, other_user)  # + self.data_based_similarity(user, other_user)
             if similarity:
                 k_denominator += abs(similarity)
                 summation += similarity * (self.votes[other_user][movie] - self.votes[other_user]['ratings_avg'])

@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 import random
 import copy
 
-from my_rec_system import MyRecomendationSystem
-
 
 def getUDataContent():
     plik = open('data/u.data', 'r')
@@ -603,7 +601,7 @@ def makeCurveFigure(horizontalValues, verticalValues, numberOfRandomTrainAndTest
 
 if __name__ == '__main__':
 
-    from my_next_rec_system import MyNextRecSystem
+    from recommendation_system import RecommendationSystem
 
     wspolczynnikRedukcjiWielkosciZbioruDanych = 0.1
 
@@ -716,7 +714,7 @@ if __name__ == '__main__':
             rs.spoilResults(tso.sciagaDlaWszechwiedzacego)
             recSystems.append(rs)
 
-            rs = MyNextRecSystem(trainSet)
+            rs = RecommendationSystem(trainSet)
             recSystems.append(rs)
 
             rs = RecSystem(dids1, copy.deepcopy(abdr1.trainsetDataRepresentation), 2)
