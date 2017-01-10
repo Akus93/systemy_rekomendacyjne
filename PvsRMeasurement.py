@@ -605,7 +605,7 @@ if __name__ == '__main__':
 
     from my_next_rec_system import MyNextRecSystem
 
-    wspolczynnikRedukcjiWielkosciZbioruDanych = 0.2
+    wspolczynnikRedukcjiWielkosciZbioruDanych = 0.1
 
     SubUDataSet = getSubUDataSet(wspolczynnikRedukcjiWielkosciZbioruDanych, 1)
     inTuples = convertSubUDataSetToInTuplesList(SubUDataSet, 4)

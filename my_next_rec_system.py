@@ -12,11 +12,11 @@ class MyNextRecSystem(RecSystem):
         self.inputDataProcessed = False
 
     def processInputArray(self):
-        print('processInputArray')
         self.load_users_and_movies()
         self.create_votes_dict()
         self.load_ratings_to_votes_dict()
         self.calculate_users_avg_rating()
+        self.load_extra_users_info()
         self.inputDataProcessed = True
 
     def getQueryFloatResult(self, queryTuple):
@@ -40,6 +40,16 @@ class MyNextRecSystem(RecSystem):
             rating, user, movie = row
             self.votes[user][movie] = int(rating)
 
+    def load_extra_users_info(self):
+        with open('data/u.user', 'r') as file:
+            for row in file:
+                user, age, gender, occupation, zip_code = row.split('|')
+                if user in self.users:
+                    self.votes[user]['age'] = int(age)
+                    self.votes[user]['gender'] = gender
+                    self.votes[user]['occupation'] = occupation
+                    self.votes[user]['zip_code'] = zip_code
+
     def calculate_users_avg_rating(self):
         for user in self.users:
             self.votes[user]['ratings_sum'] = 0
@@ -59,6 +69,28 @@ class MyNextRecSystem(RecSystem):
         user_x_movies = [movie for movie in self.movies if self.votes[user_x][movie]]
         user_y_movies = [movie for movie in self.movies if self.votes[user_y][movie]]
         return list(set(user_x_movies) & set(user_y_movies))
+
+    def data_based_similarity(self, user_x, user_y):
+        similarity = 0
+        if abs(self.votes[user_x]['age'] - self.votes[user_y]['age']) < 5:
+            similarity += 0.1
+        elif abs(self.votes[user_x]['age'] - self.votes[user_y]['age']) < 10:
+            similarity += 0.05
+        else:
+            similarity -= 0.1
+        if self.votes[user_x]['gender'] == self.votes[user_y]['gender']:
+            similarity += 0.15
+        else:
+            similarity -= 0.15
+        if self.votes[user_x]['occupation'] == self.votes[user_y]['occupation']:
+            similarity += 0.2
+        else:
+            similarity -= 0.2
+        if self.votes[user_x]['zip_code'].startswith(self.votes[user_y]['zip_code'][:2]):
+            similarity += 0.1
+        else:
+            similarity -= 0.1
+        return similarity
 
     def pearson_correlation_similarity(self, user_x, user_y):
         movies_rated_by_both = self.get_movies_rated_by_both(user_x, user_y)
@@ -82,7 +114,7 @@ class MyNextRecSystem(RecSystem):
         summation = 0
         users_set_without_user = self.users - {user}
         for other_user in users_set_without_user:
-            similarity = self.pearson_correlation_similarity(user, other_user)
+            similarity = self.pearson_correlation_similarity(user, other_user) # + self.data_based_similarity(user, other_user)
             if similarity:
                 k_denominator += abs(similarity)
                 summation += similarity * (self.votes[other_user][movie] - self.votes[other_user]['ratings_avg'])
